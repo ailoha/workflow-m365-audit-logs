@@ -1,22 +1,22 @@
 name: Daily M365 Audit Logs
 
 on:
-  schedule:
-    - cron: '0 20 * * *'  # UTC 时间每天 20:00 触发（北京时间次日 04:00）
-  workflow_dispatch:    # 手动触发
+  # schedule:              # To activate daily schedule, uncomment BOTH this line and the next '- cron:' line 请自行删除这两行前的“#”符号，以启动每日自动运行
+  #  - cron: '0 20 * * *'  # UTC 20:00 triggers daily at 04:00 Beijing Time 北京时间 04:00 触发
+  workflow_dispatch:     # Manual trigger only 手动触发
 
 permissions:
-  contents: write
+  contents: write  # Permission to commit logs back to repo 将日志提交回仓库的权限
   
-env:
+env:  # Secrets must be set in GitHub repository settings 以下参数需要自行在「Settings--Security--Secrets and variables--Actions」中进行设置
   AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
   AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   ONEDRIVE_CLIENT_ID: ${{ secrets.ONEDRIVE_CLIENT_ID }}
   ONEDRIVE_CLIENT_SECRET: ${{ secrets.ONEDRIVE_CLIENT_SECRET }}
   ONEDRIVE_TENANT_ID: ${{ secrets.ONEDRIVE_TENANT_ID }}
-  AUDIT_USER: ${{ secrets.AUDIT_USER }}
-  ONEDRIVE_USER_UPN: ${{ secrets.ONEDRIVE_USER }} #目标OneDrive用户
+  AUDIT_USER: ${{ secrets.AUDIT_USER }}            # Optional: filter logs for a specific user
+  ONEDRIVE_USER_UPN: ${{ secrets.ONEDRIVE_USER }}  # OneDrive account to upload files
 
 jobs:
   fetch-audit:
