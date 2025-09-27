@@ -1,31 +1,32 @@
 # workflow-m365-audit-logs
 
-## What It Does
-
 This GitHub Actions workflow fetches Microsoft 365 audit logs and uploads them to OneDrive, so you can use them with Power Automate or Power Apps. It helps keep E5 development active and track user activity.
 
 ## Quick Start
 
-1. **Fork This Repository**
+**1. Fork This Repository**
 
 Click Fork at the top-right of this repository to create a copy under your GitHub account.
 
-2. **Register Azure AD Apps**
+**2. Register Azure AD Apps**
 
 You need two apps in your Azure AD tenant:
 
 - M365 Audit Logs App
 > API permissions: AuditLog.Read.All (Application)
+> 
 > Grant admin consent.
 
 - OneDrive Upload App
 > API permissions: Files.ReadWrite.All (Application)
+> 
 > Optionally: User.Read.All (Application)
+> 
 > Grant admin consent.
 
 Both apps use client credentials (app-only) flow.
 
-3. **Add GitHub Secrets**
+**3. Add GitHub Secrets**
 
 Go to Settings → Secrets and Variables → Actions in your forked repository. Add these secrets:
 
@@ -40,31 +41,29 @@ Go to Settings → Secrets and Variables → Actions in your forked repository. 
 | `AUDIT_USER` | Optional: specific user UPN to filter logs |
 | `ONEDRIVE_USER` | OneDrive account UPN where logs will be uploaded |
 
-4. **Enable Automatic Run (Optional)**
+**4. Enable Automatic Run (Optional)**
 
 By default, this workflow runs manually. To enable daily automatic runs:
 
-  (1) Edit `.github/workflows/daily-audit.yml`.
+- Edit `.github/workflows/daily-audit.yml`.
 
-  (2) Uncomment these lines:
-
+- Uncomment these lines:
 > `# schedule:`
 > 
 > `#   - cron: '0 20 * * *'  # UTC 20:00 (Beijing Time 04:00)`
 
-5. **Test Workflow**
+**5. Test Workflow**
 
-(1) Go to Actions → Daily M365 Audit Logs → Run workflow.
+- Go to Actions → Daily M365 Audit Logs → Run workflow.
 
-(2) Select branch main and click Run workflow.
+- Select branch main and click Run workflow.
 
-(3) Verify:
+- Verify:
+> JSON logs appear in the repository logs folder.
+> 
+> Logs are uploaded to your configured OneDrive folder.
 
-- JSON logs appear in the repository logs folder.
-
-- Logs are uploaded to your configured OneDrive folder.
-
-6. Notes
+**6. Notes**
 
 - Make sure admin consent is granted for all API permissions.
 - **USE GitHub Secrets, NEVER commit credentials.**
