@@ -13,9 +13,11 @@ Click Fork at the top-right of this repository to create a copy under your GitHu
 2. Register Azure AD Apps
 
 You need two apps in your Azure AD tenant:
+
   (1) M365 Audit Logs App
     - API permissions: AuditLog.Read.All (Application)
     - Grant admin consent.
+
   (2) OneDrive Upload App
     - API permissions: Files.ReadWrite.All (Application)
     - Optionally: User.Read.All (Application)
@@ -41,7 +43,9 @@ Go to Settings → Secrets and Variables → Actions in your forked repository. 
 4. Enable Automatic Run (Optional)
 
 By default, this workflow runs manually. To enable daily automatic runs:
+
   (1) Open .github/workflows/daily-audit.yml.
+
   (2) Uncomment these lines:
 ```
     # schedule:
@@ -49,13 +53,17 @@ By default, this workflow runs manually. To enable daily automatic runs:
 ```
 
 5. Test Workflow
+
   (1) Go to Actions → Daily M365 Audit Logs → Run workflow.
+
   (2) Select branch main and click Run workflow.
+
   (3) Verify:
     - JSON logs appear in the repository logs folder.
     - Logs are uploaded to your configured OneDrive folder.
 
 6. Notes
+
   - Make sure admin consent is granted for all API permissions.
   - **USE GitHub Secrets, NEVER commit credentials.**
   - The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or you can **make this repository private.**
