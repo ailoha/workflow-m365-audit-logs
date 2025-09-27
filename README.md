@@ -1,82 +1,66 @@
 # workflow-m365-audit-logs
 
-⸻
+## What It Does
 
-What It Does
+This GitHub Actions workflow fetches Microsoft 365 audit logs and uploads them to OneDrive, so you can use them with Power Automate or Power Apps. It helps keep E5 development active and track user activity.
 
-This GitHub Actions workflow fetches Microsoft 365 audit logs and uploads them to OneDrive, so you can use them with Power Automate or Power Apps dashboards. It helps keep E5 developer tenants active and track user activity.
-
-⸻
-
-Quick Start
+## Quick Start
 
 1. Fork This Repository
 
 Click Fork at the top-right of this repository to create a copy under your GitHub account.
 
-⸻
-
 2. Register Azure AD Apps
 
 You need two apps in your Azure AD tenant:
-	1.	M365 Audit Logs App
-	•	API permissions: AuditLog.Read.All (Application)
-	•	Grant admin consent.
-	2.	OneDrive Upload App
-	•	API permissions: Files.ReadWrite.All (Application)
-	•	Optionally: User.Read.All (Application)
-	•	Grant admin consent.
+  (1) M365 Audit Logs App
+    - API permissions: AuditLog.Read.All (Application)
+    - Grant admin consent.
+  (2) OneDrive Upload App
+    - API permissions: Files.ReadWrite.All (Application)
+    - Optionally: User.Read.All (Application)
+    - Grant admin consent.
 
 Both apps use client credentials (app-only) flow.
-
-⸻
 
 3. Add GitHub Secrets
 
 Go to Settings → Secrets and Variables → Actions in your forked repository. Add these secrets:
 
-Secret Name	Value
-AZURE_CLIENT_ID	M365 Audit Logs app client ID
-AZURE_CLIENT_SECRET	M365 Audit Logs app client secret
-AZURE_TENANT_ID	Your Azure AD tenant ID
-ONEDRIVE_CLIENT_ID	OneDrive app client ID
-ONEDRIVE_CLIENT_SECRET	OneDrive app client secret
-ONEDRIVE_TENANT_ID	Your Azure AD tenant ID
-AUDIT_USER	Optional: specific user UPN to filter logs
-ONEDRIVE_USER	OneDrive account UPN where logs will be uploaded
-
-
-⸻
+| Secret | NameValue |
+---
+| `AZURE_CLIENT_ID` | M365 Audit Logs app client ID |
+| `AZURE_CLIENT_SECRET` | M365 Audit Logs app client secret |
+| `AZURE_TENANT_ID` | Your Azure AD tenant ID |
+| `ONEDRIVE_CLIENT_ID` | OneDrive app client ID |
+| `ONEDRIVE_CLIENT_SECRET` | OneDrive app client secret |
+| `ONEDRIVE_TENANT_ID` | Your Azure AD tenant ID |
+| `AUDIT_USER` | Optional: specific user UPN to filter logs |
+| `ONEDRIVE_USER` | OneDrive account UPN where logs will be uploaded |
 
 4. Enable Automatic Run (Optional)
 
 By default, this workflow runs manually. To enable daily automatic runs:
-	1.	Open .github/workflows/daily-audit.yml.
-	2.	Uncomment these lines:
-
-# schedule:
-#   - cron: '0 20 * * *'  # UTC 20:00 (Beijing Time 04:00)
-
-
-⸻
+  (1) Open .github/workflows/daily-audit.yml.
+  (2) Uncomment these lines:
+```
+    # schedule:
+    #   - cron: '0 20 * * *'  # UTC 20:00 (Beijing Time 04:00)
+```
 
 5. Test Workflow
-	1.	Go to Actions → Daily M365 Audit Logs → Run workflow.
-	2.	Select branch main and click Run workflow.
-	3.	Verify:
-	•	JSON logs appear in the repository logs folder.
-	•	Logs are uploaded to your configured OneDrive folder.
-
-⸻
+  (1) Go to Actions → Daily M365 Audit Logs → Run workflow.
+  (2) Select branch main and click Run workflow.
+  (3) Verify:
+    - JSON logs appear in the repository logs folder.
+    - Logs are uploaded to your configured OneDrive folder.
 
 6. Notes
-	•	Make sure admin consent is granted for all API permissions.
-	•	Use GitHub Secrets, never commit credentials.
-	•	The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary.
-	•	Point Power Apps / Power Automate to the OneDrive folder for dashboard visualization.
+  - Make sure admin consent is granted for all API permissions.
+  - **USE GitHub Secrets, NEVER commit credentials.**
+  - The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or you can **make this repository private.**
+  - Point Power Apps / Power Automate to the OneDrive folder for dashboard visualization.
 
-⸻
+## License
 
-MIT License — Free to use, modify, and share.
-
-⸻
+  [MIT License](LICENSE) — Free to use, modify, and share.
