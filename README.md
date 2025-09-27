@@ -28,7 +28,7 @@ Both apps use client credentials (app-only) flow.
 Go to Settings → Secrets and Variables → Actions in your forked repository. Add these secrets:
 
 | Secret | NameValue |
----
+| --- | --- |
 | `AZURE_CLIENT_ID` | M365 Audit Logs app client ID |
 | `AZURE_CLIENT_SECRET` | M365 Audit Logs app client secret |
 | `AZURE_TENANT_ID` | Your Azure AD tenant ID |
