@@ -49,6 +49,7 @@ By default, this workflow runs manually. To enable daily automatic runs:
   (2) Uncomment these lines:
 
 > `# schedule:`
+> 
 > `#   - cron: '0 20 * * *'  # UTC 20:00 (Beijing Time 04:00)`
 
 5. **Test Workflow**
