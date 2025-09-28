@@ -1,5 +1,7 @@
 # workflow-m365-audit-logs
 
+English | [中文简体](./README.zh-CN.md)
+
 This GitHub Actions workflow fetches Microsoft 365 audit logs and uploads them to OneDrive, so you can use them with Power Automate or Power Apps. It helps keep E5 development active and track user activity.
 
 ## Quick Start
@@ -30,7 +32,7 @@ Both apps use client credentials (app-only) flow.
 
 Go to Settings → Secrets and Variables → Actions in your forked repository. Add these secrets:
 
-| Secret | NameValue |
+| Secret Name | Value |
 | --- | --- |
 | `AZURE_CLIENT_ID` | M365 Audit Logs app client ID |
 | `AZURE_CLIENT_SECRET` | M365 Audit Logs app client secret |
@@ -38,7 +40,7 @@ Go to Settings → Secrets and Variables → Actions in your forked repository. 
 | `ONEDRIVE_CLIENT_ID` | OneDrive app client ID |
 | `ONEDRIVE_CLIENT_SECRET` | OneDrive app client secret |
 | `ONEDRIVE_TENANT_ID` | Your Azure AD tenant ID |
-| `AUDIT_USER` | Optional: specific user UPN to filter logs |
+| `AUDIT_USER` | Optional: specific user UPN to filter logs. If not set, all users’ audit logs will be collected. |
 | `ONEDRIVE_USER` | OneDrive account UPN where logs will be uploaded |
 
 **4. Enable Automatic Run (Optional)**
@@ -67,7 +69,7 @@ By default, this workflow runs manually. To enable daily automatic runs:
 
 - Make sure admin consent is granted for all API permissions.
 - **USE GitHub Secrets, NEVER commit credentials.**
-- The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or you can **make this repository private.**
+- The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or **make this repository private.**
 - Point Power Apps / Power Automate to the OneDrive folder for dashboard visualization.
 
 ## License
