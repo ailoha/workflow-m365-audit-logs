@@ -15,16 +15,13 @@ Click Fork at the top-right of this repository to create a copy under your GitHu
 You need two apps in your Azure AD tenant:
 
 - M365 Audit Logs App
-> API permissions: AuditLog.Read.All (Application)
-> 
-> Grant admin consent.
+  - API permissions: AuditLog.Read.All (Application)
+  - Grant admin consent.
 
 - OneDrive Upload App
-> API permissions: Files.ReadWrite.All (Application)
-> 
-> Optionally: User.Read.All (Application)
-> 
-> Grant admin consent.
+  - API permissions: Files.ReadWrite.All (Application)
+  - Optionally: User.Read.All (Application)
+  - Grant admin consent.
 
 Both apps use client credentials (app-only) flow.
 
@@ -63,9 +60,8 @@ By default, this workflow runs manually. To enable daily automatic runs:
 - Select branch main and click Run workflow.
 
 - Verify:
-> JSON logs appear in the repository logs folder.
-> 
-> Logs are uploaded to your configured OneDrive folder.
+  - JSON logs appear in the repository logs folder.
+  - Logs are uploaded to your configured OneDrive folder.
 
 **6. Notes**
 
