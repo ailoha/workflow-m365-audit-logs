@@ -16,13 +16,12 @@
 
 你需要在 Azure AD 租户中创建两个应用并添加 API 权限：
 
-- **M365 Audit Logs App**  
-  - API 权限: `AuditLog.Read.All`（应用程序）  
+- **M365 Audit Logs App**
+  - API 权限: `AuditLog.Read.All`（应用程序）
   - 授予管理员同意。
 
 - **OneDrive Upload App**  
-  - API 权限: `Files.ReadWrite.All`（应用程序）  
-  - 可选: `User.Read.All`（应用程序）  
+  - API 权限: `Files.ReadWrite.All`（应用程序）
   - 授予管理员同意。
 
 这两个应用都使用 **客户端凭据（仅应用）流**。
