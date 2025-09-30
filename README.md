@@ -20,7 +20,6 @@ You need two apps in your Azure AD tenant:
 
 - OneDrive Upload App
   - API permissions: Files.ReadWrite.All (Application)
-  - Optionally: User.Read.All (Application)
   - Grant admin consent.
 
 Both apps use client credentials (app-only) flow.
