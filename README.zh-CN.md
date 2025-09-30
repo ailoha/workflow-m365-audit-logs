@@ -17,13 +17,13 @@
 你需要在 Azure AD 租户中创建两个应用并添加 API 权限：
 
 - **M365 Audit Logs App**  
-  > API 权限: `AuditLog.Read.All`（应用程序）  
-  > 授予管理员同意。
+  - API 权限: `AuditLog.Read.All`（应用程序）  
+  - 授予管理员同意。
 
 - **OneDrive Upload App**  
-  > API 权限: `Files.ReadWrite.All`（应用程序）  
-  > 可选: `User.Read.All`（应用程序）  
-  > 授予管理员同意。
+  - API 权限: `Files.ReadWrite.All`（应用程序）  
+  - 可选: `User.Read.All`（应用程序）  
+  - 授予管理员同意。
 
 这两个应用都使用 **客户端凭据（仅应用）流**。
 
@@ -49,9 +49,10 @@
 - 编辑 `.github/workflows/daily-audit.yml`。
 
 - 去掉以下行开头的 `#` 注释符号：
-> `# schedule:`
->
-> `#   - cron: '0 20 * * *'  # 每天 UTC 时间 20:00（北京时间 04:00）`
+```yml
+  # schedule:
+  #   - cron: '0 20 * * *'  # 每天 UTC 时间 20:00（北京时间 04:00）
+```
 
 **5. 测试工作流**
 
@@ -60,9 +61,8 @@
 - 选择 main 分支，点击 Run workflow。
 
 - 验证结果：
-> JSON 日志会出现在仓库的 logs 文件夹中。
->
-> 日志会上传到你配置的 OneDrive 文件夹中。
+  - JSON 日志会出现在仓库的 logs 文件夹中。
+  - 日志会上传到你配置的 OneDrive 文件夹中。
 
 **6. 注意事项**
 
