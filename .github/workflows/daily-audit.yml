@@ -1,0 +1,185 @@
+name: Daily M365 Audit Logs
+
+on:
+  # schedule:              # To activate daily schedule, uncomment BOTH this line and the next '- cron:' line 请自行删除这两行前的“#”符号，以启动每日自动运行
+  #  - cron: '0 20 * * *'  # UTC 20:00 triggers daily at 04:00 Beijing Time 北京时间 04:00 触发
+  workflow_dispatch:     # Manual trigger only 手动触发
+
+permissions:
+  contents: write  # Permission to commit logs back to repo 将日志提交回仓库的权限
+  
+env:  # Secrets must be set in GitHub repository settings 以下参数需要自行在「Settings--Security--Secrets and variables--Actions」中进行设置
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ONEDRIVE_CLIENT_ID: ${{ secrets.ONEDRIVE_CLIENT_ID }}
+  ONEDRIVE_CLIENT_SECRET: ${{ secrets.ONEDRIVE_CLIENT_SECRET }}
+  ONEDRIVE_TENANT_ID: ${{ secrets.ONEDRIVE_TENANT_ID }}
+  AUDIT_USER: ${{ secrets.AUDIT_USER }}            # Optional: filter logs for a specific user
+  ONEDRIVE_USER_UPN: ${{ secrets.ONEDRIVE_USER }}  # OneDrive account to upload files
+
+jobs:
+  fetch-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install axios dayjs form-data
+
+      - name: Fetch M365 Audit Logs and upload to OneDrive
+        run: |
+          node <<'EOF'
+          const axios = require('axios');
+          const fs = require('fs');
+          const path = require('path');
+          const dayjs = require('dayjs');
+          const utc = require('dayjs/plugin/utc');
+          const timezone = require('dayjs/plugin/timezone');
+          const FormData = require('form-data');
+          dayjs.extend(utc);
+          dayjs.extend(timezone);
+
+          const azureTenantId = process.env.AZURE_TENANT_ID;
+          const azureClientId = process.env.AZURE_CLIENT_ID;
+          const azureClientSecret = process.env.AZURE_CLIENT_SECRET;
+          const userUpn = process.env.AUDIT_USER || '';
+
+          const oneDriveTenantId = process.env.ONEDRIVE_TENANT_ID;
+          const oneDriveClientId = process.env.ONEDRIVE_CLIENT_ID;
+          const oneDriveClientSecret = process.env.ONEDRIVE_CLIENT_SECRET;
+          const oneDriveUserUpn = process.env.ONEDRIVE_USER_UPN;
+
+          async function getAzureToken() {
+            const resp = await axios.post(
+              `https://login.microsoftonline.com/${azureTenantId}/oauth2/v2.0/token`,
+              new URLSearchParams({
+                client_id: azureClientId,
+                scope: 'https://graph.microsoft.com/.default',
+                client_secret: azureClientSecret,
+                grant_type: 'client_credentials'
+              }).toString(),
+              { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+            );
+            return resp.data.access_token;
+          }
+
+          async function getOneDriveToken() {
+            const resp = await axios.post(
+              `https://login.microsoftonline.com/${oneDriveTenantId}/oauth2/v2.0/token`,
+              new URLSearchParams({
+                client_id: oneDriveClientId,
+                scope: 'https://graph.microsoft.com/.default',
+                client_secret: oneDriveClientSecret,
+                grant_type: 'client_credentials'
+              }).toString(),
+              { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+            );
+            return resp.data.access_token;
+          }
+
+          async function getAuditLogs(token) {
+            const startTime = dayjs().tz('Asia/Shanghai').subtract(1, 'day').hour(4).minute(0).second(0).millisecond(0).utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            const endTime = dayjs().tz('Asia/Shanghai').hour(4).minute(0).second(0).millisecond(0).utc().format('YYYY-MM-DDTHH:mm:ss[Z]');
+            let filter = `activityDateTime ge ${startTime} and activityDateTime lt ${endTime}`;
+            if (userUpn) {
+              filter += ` and userPrincipalName eq '${userUpn}'`;
+            }
+            let url = `https://graph.microsoft.com/v1.0/auditLogs/directoryAudits?$filter=${encodeURIComponent(filter)}`;
+
+            let logs = [];
+            let nextUrl = url;
+
+            while (nextUrl) {
+              const resp = await axios.get(nextUrl, {
+                headers: { Authorization: `Bearer ${token}` }
+              });
+              logs = logs.concat(resp.data.value);
+              nextUrl = resp.data['@odata.nextLink'] || null;
+            }
+            return logs;
+          }
+
+          async function ensureFolder(accessToken, folderName) {
+            try {
+              // Check if folder exists
+              const resp = await axios.get(`https://graph.microsoft.com/v1.0/users/${oneDriveUserUpn}/drive/root/children`, {
+                headers: { Authorization: `Bearer ${accessToken}` }
+              });
+              const folders = resp.data.value;
+              const folder = folders.find(item => item.name === folderName && item.folder);
+              if (folder) return folder.id;
+              const createResp = await axios.post(`https://graph.microsoft.com/v1.0/users/${oneDriveUserUpn}/drive/root/children`, {
+                name: folderName,
+                folder: {},
+                '@microsoft.graph.conflictBehavior': 'fail'
+              }, {
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+              });
+              return createResp.data.id;
+            } catch (error) {
+              console.error('Failed to ensure folder:', error.response ? error.response.data : error.message);
+              throw error;
+            }
+          }
+
+          async function uploadFile(accessToken, folderName, filename, content) {
+            const uploadUrl = `https://graph.microsoft.com/v1.0/users/${oneDriveUserUpn}/drive/root:/${folderName}/${filename}:/content`;
+            await axios.put(uploadUrl, content, {
+              headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' }
+            });
+          }
+
+          (async () => {
+            try {
+              const azureToken = await getAzureToken();
+              const logs = await getAuditLogs(azureToken);
+
+              const dir = path.join(process.cwd(), 'logs');
+              if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+              const fileDate = dayjs().tz('Asia/Shanghai').subtract(1, 'day').format('YYYY-MM-DD');
+              const filename = `audit_${fileDate}.json`;
+              const filepath = path.join(dir, filename);
+              fs.writeFileSync(filepath, JSON.stringify(logs, null, 2));
+              console.log(`Saved ${logs.length} records to ${filepath}`);
+
+              if (logs.length > 0) {
+                const oneDriveToken = await getOneDriveToken();
+                const folderName = 'M365AuditLogs';
+                await ensureFolder(oneDriveToken, folderName);
+                await uploadFile(oneDriveToken, folderName, filename, JSON.stringify(logs, null, 2));
+                console.log(`Uploaded ${filename} to OneDrive folder ${folderName}`);
+              } else {
+                console.log('No logs to upload to OneDrive.');
+              }
+            } catch (err) {
+              console.error('Error:', err.message || err);
+              process.exit(1);
+            }
+          })();
+          EOF
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          # Ignore untracked files like node_modules and package files
+          echo "node_modules/" >> .git/info/exclude
+          echo "package-lock.json" >> .git/info/exclude
+          echo "package.json" >> .git/info/exclude
+          git add logs/*.json
+          # Only commit if there are staged changes
+          if ! git diff --cached --quiet; then
+            git commit -m "Add daily audit logs"
+            git push
+          else
+            echo "No changes to commit."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
