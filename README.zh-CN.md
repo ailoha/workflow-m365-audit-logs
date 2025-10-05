@@ -12,7 +12,7 @@
 
 点击本仓库右上角的 **Fork** 按钮，将其复制到你的 GitHub 账号下。
 
-**2. 注册 Azure AD 应用**
+**2. [注册 Azure AD 应用](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)**
 
 你需要在 Azure AD 租户中创建两个应用并添加 API 权限：
 
