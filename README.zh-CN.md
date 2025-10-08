@@ -14,7 +14,7 @@
 
 **2. [注册 Azure AD 应用](https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade)**
 
-你需要在 Azure AD 租户中创建两个应用并添加 API 权限：
+你需要在 Azure AD 租户中创建两个应用（注意保存**客户端密钥**，它只会在创建时可以被复制，离开页面再回来就看不齐了），并添加 API 权限：
 
 - **M365 Audit Logs App**
   - API 权限: `AuditLog.Read.All`（应用程序）
