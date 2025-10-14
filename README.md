@@ -4,6 +4,16 @@ English | [中文简体](./README.zh-CN.md)
 
 This GitHub Actions workflow fetches Microsoft 365 audit logs and uploads them to OneDrive, so you can use them with Power Automate or Power Apps. It helps keep E5 development active and track user activity.
 
+## ⚠️ Security Notice
+
+By default, **forked repositories are PUBLIC**, so it is **STRONGLY RECOMMENDED** to set your forked repository to **PRIVATE** before running the workflow.
+
+This workflow automatically retrieves Microsoft 365 audit logs and stores them as JSON files in your repository.
+
+If your repository remains public, these logs may **EXPOSE** user activity details, timestamps, IP addresses, or other sensitive information.
+
+To protect your **DATA PRIVACY** and **TENANT SECURITY**, always **REVIEW YOUR REPOSITORY VISIBILITY AND SECRETS CONFIGURATION** carefully before activating the workflow.
+
 ## Quick Start
 
 **1. Fork This Repository**
@@ -64,9 +74,9 @@ By default, this workflow runs manually. To enable daily automatic runs:
 
 **6. Notes**
 
-- Make sure admin consent is granted for all API permissions.
-- **USE GitHub Secrets, NEVER commit credentials.**
-- The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or **make this repository private.**
+- Ensure **admin consent** is granted for all API permissions.
+- **ALWAYS USE GitHub Secrets — NEVER COMMIT CREDENTIALS.**
+- The workflow commits JSON logs to the repository by default; you may ignore or remove them if unnecessary, or **make this repository PRIVATE.**
 - Point Power Apps / Power Automate to the OneDrive folder for dashboard visualization.
 
 ## License
